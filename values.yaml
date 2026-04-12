@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/vedantaggrawal/devops-test-webserver
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+canary:
+  enabled: false
+  # If true, uses Argo Rollouts instead of standard Deployment.
+  # Example strategy:
+  # steps:
+  #   - setWeight: 20
+  #   - pause: {}
+
+envVariables: {}
+  # ENV_NAME: "value"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+resources: {}

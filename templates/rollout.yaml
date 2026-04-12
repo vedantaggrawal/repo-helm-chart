@@ -1,0 +1,45 @@
+{{- if .Values.canary.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "generic-app.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "generic-app.name" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    canary:
+      {{- if .Values.canary.steps }}
+      steps:
+        {{- toYaml .Values.canary.steps | nindent 8 }}
+      {{- else }}
+      steps:
+      - setWeight: 20
+      - pause: {duration: 10s}
+      - setWeight: 50
+      - pause: {duration: 10s}
+      {{- end }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "generic-app.name" . }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "generic-app.name" . }}
+    spec:
+      containers:
+        - name: {{ include "generic-app.name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if .Values.envVariables }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "generic-app.fullname" . }}-config
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}
