@@ -27,6 +27,10 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "generic-app.name" . }}
     spec:
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ include "generic-app.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
