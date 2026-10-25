@@ -30,4 +30,20 @@ ingress:
         - path: /
           pathType: ImplementationSpecific
 
+httpRoute:
+  # Gateway API HTTPRoute to this chart's Service; use instead of ingress.
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: platform
+  #    namespace: envoy-gateway-system
+  #    sectionName: https
+  hostnames: []
+  #  - app.example.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+
 resources: {}
